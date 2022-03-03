@@ -143,7 +143,7 @@ def series_check(random_numbers, max_series):
     counters = [0 for _ in range(max_series)]
     series = 0
     tmp = numbers[i]
-    for i in range(N):
+    for i in range(1, N):
         if tmp == numbers[i]:
             series += 1
         elif series > max_series:
@@ -153,6 +153,7 @@ def series_check(random_numbers, max_series):
             counters[series] += 1
             tmp = numbers[i]
             series = 0
+    N = sum(counters)
     p_L = [0 for _ in range(max_series)]
     for i in range(max_series):
         chance = 0.9 * 0.1**i
