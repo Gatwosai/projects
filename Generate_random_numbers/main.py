@@ -8,6 +8,7 @@ COUNT_NUMBERS = 201
 
 
 def main():
+    print("Количество случайных чисел =", COUNT_NUMBERS)
     random_numbers = generate_random_numbers(RANDOM1, RANDOM2, COUNT_NUMBERS)
     m, D, sigma = standart_parameters(random_numbers)
     print("Случайные числа:", str(random_numbers[:10])[1:-1], "...")
