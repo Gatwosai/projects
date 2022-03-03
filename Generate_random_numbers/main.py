@@ -1,8 +1,9 @@
 import matplotlib.pyplot as plt
+import prettytable as pt
 
 
-RANDOM1 = 0.6299
-RANDOM2 = 0.8742
+RANDOM1 = 0.6219
+RANDOM2 = 0.3742
 COUNT_NUMBERS = 201
 
 
@@ -15,9 +16,7 @@ def main():
     print("Среднеквадратичное отклонение =", sigma)
     show_frequency_test(random_numbers, m, sigma)
     uniformity_check(random_numbers, 5)
-    # FIXME add output
     frequency_check(random_numbers)
-    # FIXME add output
     series_check(random_numbers, 5)
 
 
@@ -58,13 +57,14 @@ def show_frequency_test(random_numbers, m, sigma):
     persent1 = len(x1) / (len(x1) + len(x2) + len(x3)) * 100
     persent2 = len(x2) / (len(x1) + len(x2) + len(x3)) * 100
     persent3 = len(x3) / (len(x1) + len(x2) + len(x3)) * 100
-    plt.text(0.1, 5, str(round(persent1, 2)) + "%")
+    plt.text(0.05, 5, str(round(persent1, 2)) + "%")
     plt.text(m, 10, str(round(persent2, 2)) + "%")
     plt.text(0.9, 5, str(round(persent3, 2)) + "%")
     plt.show()
 
 
 def uniformity_check(random_numbers, k):
+    print("\nПроверка на равномерность:")
     N = len(random_numbers)
     step = 1 / k
     random_numbers = sorted(random_numbers)
@@ -79,6 +79,10 @@ def uniformity_check(random_numbers, k):
             else:
                 interval_boundary += step
                 break
+    plt.bar(range(1, k + 1), counters, label="Интервалы")
+    plt.legend()
+    plt.xticks(range(1, k + 1))
+    plt.show()
     p_i = 1 / k
     khi_exp = sum([n**2 / p_i - N for n in counters]) / N
     conclusion_khi_square(N, khi_exp, "случайности равномерного генератора")
@@ -98,16 +102,28 @@ def conclusion_khi_square(N, khi_square_exp, hypothesis):
     theory_list = calc_theory(N)
     theory_list = [round(t, 2) for t in theory_list]
     p = ["1%", "5%", "25%", "50%", "75%", "95%", "99%"]
-    print(str(p)[1:-1].replace("'", ""))
-    print(str(theory_list)[1:-1])
+    theory_table = pt.PrettyTable()
+    theory_table.field_names = [t for t in p]
+    theory_table.add_row(theory_list)
+    print(theory_table)
+    print("Хи_квадрат_эксп =", khi_square_exp)
     choose = 0
     if khi_square_exp < theory_list[0]:
         choose = 0
-    for i in range(len(theory_list)):
-        if khi_square_exp > theory_list[i]:
-            choose = p[i]
-    if khi_square_exp > theory_list[-1]:
+    elif khi_square_exp > theory_list[-1]:
         choose = 1
+    else:
+        for i in range(0, len(theory_list)):
+            if khi_square_exp > theory_list[i]:
+                choose = i
+        right = theory_list[choose + 1] - khi_square_exp
+        left = khi_square_exp - theory_list[choose]
+        if right > left:
+            print("Хи_квадрат_теор =", theory_list[choose])
+            choose = p[choose]
+        else:
+            print("Хи_квадрат_теор =", theory_list[choose + 1])
+            choose = p[choose + 1]
     match(str(type(choose))):
         case "<class 'int'>":
             print("Гипотеза о", hypothesis, "не выполняется")
@@ -121,6 +137,7 @@ def conclusion_khi_square(N, khi_square_exp, hypothesis):
 
 
 def frequency_check(random_numbers):
+    print("\nПроверка на статическую независимость частот:")
     N = len(random_numbers)
     numbers = ""
     for i in range(N):
@@ -130,12 +147,17 @@ def frequency_check(random_numbers):
         for j in range(N):
             if numbers[j] == str(i):
                 counters[i] += 1
+    plt.bar(range(0, 10), counters, label="Частоты цифр")
+    plt.legend()
+    plt.xticks(range(0, 10))
+    plt.show()
     p_i = 1 / 10
     khi_exp = sum([n**2 / p_i - N for n in counters]) / N
     conclusion_khi_square(N, khi_exp, "статистической независимости частот")
 
 
 def series_check(random_numbers, max_series):
+    print("\nПроверка на статическую независимость серий:")
     N = len(random_numbers)
     numbers = ""
     for i in range(N):
@@ -153,6 +175,10 @@ def series_check(random_numbers, max_series):
             counters[series] += 1
             tmp = numbers[i]
             series = 0
+    plt.bar(range(1, max_series + 1), counters, label="Частоты серий цифр")
+    plt.legend()
+    plt.xticks(range(1, max_series))
+    plt.show()
     N = sum(counters)
     p_L = [0 for _ in range(max_series)]
     for i in range(max_series):
