@@ -35,6 +35,8 @@ def euler_method():
     P = np.array(P)
     plt.plot(t, P[:, 0], t, P[:, 1], t, P[:, 2], t, P[:, 3], t, P[:, 4])
     plt.legend(["p1", "p2", "p3", "p4", "p5"])
+    plt.xlabel("t")
+    plt.ylabel("p(t)")
     plt.show()
 
 
