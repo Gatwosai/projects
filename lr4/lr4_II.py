@@ -3,43 +3,47 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.cbook as cbook
 
-PATH_OF_FILE = '/home/gasai/Документы/учеба/ИИ/projects/lr4/naruto.jpg'
+PATH_OF_FILE = "/home/gasai/Документы/учеба/ИИ/projects/lr4/naruto.jpg"
 K = 10
+
 
 def main():
     global K
     while True:
-        input_k = input('Ввод количества цветов: ')
-        if input_k.isdigit() == True:
+        input_k = input("Ввод количества цветов: ")
+        if input_k.isdigit() is True:
             if int(input_k) > 0:
                 break
-        print('Неверный ввод, ожидалось число большее 0')
+        print("Неверный ввод, ожидалось число большее 0")
     K = int(input_k)
     show_images()
-    
+
+
 def show_images():
     """Shows uploaded and converted image."""
     with cbook.get_sample_data(PATH_OF_FILE) as image_file:
         image = plt.imread(image_file)
     plt.figure(1)
-    plt.title('Начальное изображение')
+    plt.title("Начальное изображение")
     plt.imshow(image)
     plt.figure(2)
-    plt.title('Преобразованное изображение')
+    plt.title("Преобразованное изображение")
     plt.imshow(k_means_for_image(image))
     plt.show()
 
+
 def pixel_bright(pix1, pix2):
     """Evaluates the proximity of pixel brightness.
-    
+
     f_i = 30 * (Ri-R0)**2 + 59 * (Gi-G0)**2 + 11 * (Bi-B0)**2
-    30, 59, 11 -- sensitivity of the human eye to 
+    30, 59, 11 -- sensitivity of the human eye to
     red, green and blue colors.
 
     """
     R1, G1, B1 = int(pix1[0]), int(pix1[1]), int(pix1[2])
     R2, G2, B2 = int(pix2[0]), int(pix2[1]), int(pix2[2])
-    return 30 * (R1-R2)**2 + 59 * (G1-G2)**2 + 11 * (B1-B2)**2
+    return 30 * (R1 - R2) ** 2 + 59 * (G1 - G2) ** 2 + 11 * (B1 - B2) ** 2
+
 
 def estimate_center(cluster):
     """Find and return mean RGB value in cluster."""
@@ -53,7 +57,8 @@ def estimate_center(cluster):
     G = round(G / len_cluster)
     B = round(B / len_cluster)
     return [R, G, B]
-    
+
+
 def k_means_for_image(image):
     """Method k-means for pixels."""
     # 1 point
@@ -90,6 +95,7 @@ def k_means_for_image(image):
         if check:
             break
     return new_image
-    
-if __name__ == '__main__':
+
+
+if __name__ == "__main__":
     main()
