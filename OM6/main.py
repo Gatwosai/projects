@@ -16,22 +16,37 @@
 стоимость издержек станции автосервиса не считая зарплат в месяц составляет 250000 руб.,
 60% от выручки за месяц остается у владельца станции автосервиса.
 '''
+def geom_prog(n, m, ro):
+	'''Геометрическая прогрессия со знаменателем (ro / n). Расчет p0.'''
+	sum = 1
+	for i in range(1, n + 1):
+		sum += ro**i / fact(i)
+	sum += ro**n / fact(n) * ((ro/n - (ro/n)**(m+1)) / (1 - ro/n))
+	return sum**-1
+	
 
+def fact(n):
+	if n == 1:
+		return 1
+	return n * fact(n - 1)
+	
+	
 def car_service(n, m, _lambda, mu):
     '''Расчет значений по заданию.'''
     t_ob = 1 / mu
     ro = _lambda / mu
     gamma = ro / n
-    p0 = (1 + (ro / 1) + (ro**n / n) + ((ro**n / n) * ((ro/n - (ro/n)**(m+1)) / (1 - ro/n)))) ** -1
-    p_otk = ro**(n+m) / (n**m * n) * p0
+    p0 = geom_prog(n, m, ro)
+    p_otk = ro**(n+m) / (n**m * fact(n)) * p0
     q = 1 - p_otk
     A = _lambda * q
-    r = ((ro ** (n+1) * p0) / (n * n)) * ((1 - (m+1) * gamma**m + m * gamma**(m+1)) / (1 - gamma)**2)
+    r = ((ro ** (n+1) * p0) / (n * fact(n))) * ((1 - (m+1) * gamma**m + m * gamma**(m+1)) / (1 - gamma)**2)
     t_ob_sr = q * t_ob
     t_oj = r / _lambda
     t_sist = t_oj + q * t_ob
     p = 1 - (p0 + ro * p0)
     return ro, gamma, p0, p_otk, q, A, r, t_ob_sr, t_sist, p
+
 
 def profit(n):
     '''Расчет прибыли. Зависит от количества автомехаников n'''
@@ -42,7 +57,8 @@ def profit(n):
     _profit = income - costs
     print("Прибыль для владельца, если иметь %d автомехаников: %d рублей"%(n, _profit))
     return _profit
-    
+
+
 n = 2
 m = 5
 _lambda = 6
@@ -58,10 +74,13 @@ print("Какова вероятность того, что в системе н
 print("Каково среднее число машин в очереди?\n", round(r, 3), sep='')
 print("Каково среднее время ожидания обслуживания?\n", round(t_ob_sr * 60, 2), " минут", sep='')
 print("Каково среднее время пребывания в системе?\n", round(t_sist * 60, 2), " минут", sep='')
-print("Какова вероятность того, что вновь прибывшей машине придется ждать?\n", round(p * 100,2), "%", sep='') 
+print("Какова вероятность того, что вновь прибывшей машине придется ждать?\n", round(p * 100, 2), "%", sep='') 
 
 p1 = profit(2)
 p2 = profit(3)
 p3 = profit(4)
 if p1 < p2:
     print("Вывод: выгодно нанять еще автомехаников")
+
+
+
