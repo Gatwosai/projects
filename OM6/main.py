@@ -17,48 +17,51 @@
 60% от выручки за месяц остается у владельца станции автосервиса.
 '''
 
+def car_service(n, m, _lambda, mu):
+    '''Расчет значений по заданию.'''
+    t_ob = 1 / mu
+    ro = _lambda / mu
+    gamma = ro / n
+    p0 = (1 + (ro / 1) + (ro**n / n) + ((ro**n / n) * ((ro/n - (ro/n)**(m+1)) / (1 - ro/n)))) ** -1
+    p_otk = ro**(n+m) / (n**m * n) * p0
+    q = 1 - p_otk
+    A = _lambda * q
+    r = ((ro ** (n+1) * p0) / (n * n)) * ((1 - (m+1) * gamma**m + m * gamma**(m+1)) / (1 - gamma)**2)
+    t_ob_sr = q * t_ob
+    t_oj = r / _lambda
+    t_sist = t_oj + q * t_ob
+    p = 1 - (p0 + ro * p0)
+    return ro, gamma, p0, p_otk, q, A, r, t_ob_sr, t_sist, p
+
+def profit(n):
+    '''Расчет прибыли. Зависит от количества автомехаников n'''
+    ro, gamma, p0, p_otk, q, A, r, t_ob_sr, t_sist, p = car_service(n, m, _lambda, mu)
+    income = 8000 * A * 8 * 22 # 8000 за машину, А - машин в час, 8 часов 22 дня
+    income = income * 0.6 # 60% остается владельцу
+    costs = 75000 * n + 250000 # 75к зарплаты, 250000 на авточасти
+    _profit = income - costs
+    print("Прибыль для владельца, если иметь %d автомехаников: %d рублей"%(n, _profit))
+    return _profit
+    
 n = 2
 m = 5
 _lambda = 6
-t_ob = 1.2
-mu = 1 / t_ob
-ro = _lambda / mu
-gamma = ro / n
-print("Входные данные: ", ro, " ", mu, " ", gamma)
+mu = 1.2
+ro, gamma, p0, p_otk, q, A, r, t_ob_sr, t_sist, p = car_service(n, m, _lambda, mu)
 
-print("p0:")
-p0 = (1 + (ro / 1) + (ro**n / n) + ((ro**n / n) * ((ro/n - (ro/n)**(m+1)) / (1 - ro/n)))) ** -1
-print(p0)
+print("Входные данные: n=%d, m=%d, λ=%d, μ=%.1f, ρ=%.1f, γ=%.1f"%(n, m, _lambda, mu, ro, gamma))
+print("Вероятность что все каналы свободны = ", round(p0 * 100, 5), "%", sep='')
+print("Вероятность отказа = ", round(p_otk * 100, 2), "%" , sep='')
+print("Относительная пропускная способность = ", round(q * 100, 2), "%", sep='')
+print("Абсолютная пропускная способность = ", round(A, 3), " машины в час", sep='')
+print("Какова вероятность того, что в системе нет машин?\n", round(p0 * 100, 5), "%", sep='')
+print("Каково среднее число машин в очереди?\n", round(r, 3), sep='')
+print("Каково среднее время ожидания обслуживания?\n", round(t_ob_sr * 60, 2), " минут", sep='')
+print("Каково среднее время пребывания в системе?\n", round(t_sist * 60, 2), " минут", sep='')
+print("Какова вероятность того, что вновь прибывшей машине придется ждать?\n", round(p * 100,2), "%", sep='') 
 
-print("Вероятность отказа:")
-p_otk = ro**(n+m) / (n**m * n) * p0
-print(p_otk)
-
-print("Относительная пропускная способность:")
-q = 1 - p_otk
-print(q)
-
-print("Абсолютная пропускная способность:")
-A = _lambda * q
-print(A)
-
-print("Какова вероятность того, что в системе нет машин?")
-print(p0 * 100, "%")
-
-print("Каково среднее число машин в очереди?")
-r = ((ro ** (n+1) * p0) / (n * n)) * ((1 - (m+1) * gamma**m + m * gamma**(m+1) / (1 - gamma)**2))
-print(r)
-
-print("Каково среднее время ожидания обслуживания?")
-t_ob_sr = q * t_ob
-print(t_ob_sr)
-
-print("Каково среднее время пребывания в системе?")
-t_oj = r / _lambda
-t_sist = t_oj + q * t_ob
-print(t_sist)
-
-print("Какова вероятность того, что вновь прибывшей машине придется ждать?") 
-# Когда НЕ (все свободны или занят 1 канал)
-p = 1 - (p0 + ro * p0)
-print(p * 100, "%")
+p1 = profit(2)
+p2 = profit(3)
+p3 = profit(4)
+if p1 < p2:
+    print("Вывод: выгодно нанять еще автомехаников")
