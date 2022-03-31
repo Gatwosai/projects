@@ -1,17 +1,18 @@
 import random
+import math
+_LAMBDA = 6
 
 
 def main():
-    r = random.random()
-    print(r)
+    print(gen_random())
 
 
 def density_distr():
-    pass
+    return []
 
 
 def gen_random():
-    pass
+    return -1 / _LAMBDA * math.log(random.random())
 
 
 if __name__ == "__main__":
